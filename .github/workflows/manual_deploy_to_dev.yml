@@ -1,0 +1,47 @@
+name: Manual Deploy to Dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'commit sha version'
+        required: true
+
+jobs:
+  manual_deploy_to_dev:
+    name: Manual Deploy to Dev
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Deploying ${{ github.event.inputs.ref }} to Dev..."
+      
+      - name: Checkout using git ref
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref }}
+
+      - name: Set up Go 1.16.3
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.3
+        id: go
+      
+      - name: Install Migrate CLI
+        run: |
+          go install -tags 'mysql github' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+      - name: Set Output Migration Version
+        id: current-schema
+        run: |
+          version="$(ls -1r schema | head -1 | sed 's/_.*//')"
+          echo ::set-output name=version::$version
+
+      - name: Run Migration to Dev env
+        env:
+          SQL_DSN: mysql://root:password@tcp(0.tcp.ngrok.io:18416)/demo_employee_migrate
+        run: |
+          migrate -verbose -database "${SQL_DSN}" -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#master" goto ${{ steps.current-schema.outputs.version }}
+      
+      - name: Deploy Stack 
+        run: echo "Stack is Deployed successfully!"
+
