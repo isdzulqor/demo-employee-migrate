@@ -15,13 +15,24 @@ services:
       timeout: 20s
       retries: 10
   
-  cli_migrate:
+  db_migrate_up:
     image: migrate/migrate
     depends_on:
       mysql:
         condition: service_healthy
     volumes:
       - ./schema:/schema
-    command: -verbose -path /schema -database "mysql://root:password@tcp(mysql:3306)/demo_employee_migrate" up
+    command: -verbose -path schema -database "mysql://root:password@tcp(mysql:3306)/demo_employee_migrate" up
+  
+  db_migrate_down:
+    image: migrate/migrate
+    depends_on:
+      mysql:
+        condition: service_healthy
+      db_migrate_up:
+        condition: service_completed_successfully
+    volumes:
+      - ./schema:/schema
+    command: -verbose -path schema -database "mysql://root:password@tcp(mysql:3306)/demo_employee_migrate" down -all
 
   
