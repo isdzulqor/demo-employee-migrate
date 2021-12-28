@@ -1,5 +1,5 @@
 -- Seed master data for regions
-INSERT INTO regions(region_id, region_name) VALUES (1, 'Asia');
+INSERT INTO bajol(region_id, region_name) VALUES (1, 'Asia');
 INSERT INTO regions(region_id, region_name) VALUES (2, 'Australia');
 INSERT INTO regions(region_id, region_name) VALUES (3, 'Europe');
 INSERT INTO regions(region_id, region_name) VALUES (4, 'Africa');

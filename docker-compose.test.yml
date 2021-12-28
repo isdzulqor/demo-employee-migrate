@@ -9,7 +9,7 @@ services:
     environment: 
       - MYSQL_HOST=mysql:3306
       - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=halah
+      - MYSQL_DATABASE=demo_employee_migrate
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
