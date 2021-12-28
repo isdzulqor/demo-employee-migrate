@@ -1,20 +1,25 @@
-version: "3.7"
+version: "2.1"
 
 services:
   mysql:
     image: mysql:5.7
+    restart: always
     ports: 
       - 3306:3306
     environment: 
       - MYSQL_HOST=mysql:3306
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=demo_employee_migrate
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
   
   cli_migrate:
-    restart: on-failure
     image: migrate/migrate
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
     volumes:
       - ./schema:/schema
     command: -verbose -path /schema -database "mysql://root:password@tcp(mysql:3306)/demo_employee_migrate" up
