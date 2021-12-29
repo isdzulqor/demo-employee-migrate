@@ -46,7 +46,7 @@ jobs:
         env:
           SQL_DSN: mysql://root:password@tcp(8.tcp.ngrok.io:16776)/demo_employee_migrate
         run: |
-          docker run -it --rm migrate/migrate -verbose -database "${SQL_DSN}" -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#master" goto ${{ steps.current-schema.outputs.version }}
+          docker run --rm migrate/migrate -verbose -database "${SQL_DSN}" -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#master" goto ${{ steps.current-schema.outputs.version }}
       
       - name: Deploy Stack 
         run: echo "Stack is Deployed successfully!"
