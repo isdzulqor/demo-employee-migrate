@@ -6,5 +6,5 @@
 CREATE TABLE nations
      SELECT * FROM countries;
 
-DROP TABLE bajol;
+DROP TABLE countries;
 
