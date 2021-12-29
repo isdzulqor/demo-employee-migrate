@@ -27,7 +27,7 @@ jobs:
 
       - name: Run Migration to Dev env
         env:
-          SQL_DSN: mysql://root:password@tcp(0.tcp.ngrok.io:17642)/demo_employee_migrate
+          SQL_DSN: mysql://root:password@tcp(8.tcp.ngrok.io:16776)/demo_employee_migrate
         run: |
           migrate -verbose -database "${SQL_DSN}" -path schema up
       
