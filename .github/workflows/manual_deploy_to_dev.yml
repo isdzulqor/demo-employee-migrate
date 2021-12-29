@@ -36,11 +36,17 @@ jobs:
           version="$(ls -1r schema | head -1 | sed 's/_.*//')"
           echo ::set-output name=version::$version
 
-      - name: Run Migration to Dev env
+      # - name: Run Migration to Dev env
+      #   env:
+      #     SQL_DSN: mysql://root:password@tcp(8.tcp.ngrok.io:16776)/demo_employee_migrate
+      #   run: |
+      #     migrate -verbose -database "${SQL_DSN}" -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#master" goto ${{ steps.current-schema.outputs.version }}
+      
+      - name: Run Migration to Dev env with Docker
         env:
           SQL_DSN: mysql://root:password@tcp(8.tcp.ngrok.io:16776)/demo_employee_migrate
         run: |
-          migrate -verbose -database "${SQL_DSN}" -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#master" goto ${{ steps.current-schema.outputs.version }}
+          docker run -it --rm migrate/migrate -verbose -database "${SQL_DSN}" -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#master" goto ${{ steps.current-schema.outputs.version }}
       
       - name: Deploy Stack 
         run: echo "Stack is Deployed successfully!"
