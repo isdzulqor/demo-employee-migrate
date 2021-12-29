@@ -4,7 +4,7 @@
 -- RENAME TABLE countries TO nations
 
 CREATE TABLE countries
-     SELECT * FROM bajol;
+     SELECT * FROM nations;
 
 DROP TABLE nations;
 
