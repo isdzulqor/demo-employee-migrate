@@ -15,6 +15,7 @@ services:
       timeout: 20s
       retries: 10
   
+  # check & test schema UP Migration 
   db_migrate_up:
     image: migrate/migrate
     depends_on:
@@ -24,6 +25,7 @@ services:
       - ./schema:/schema
     command: -verbose -path schema -database "mysql://root:password@tcp(mysql:3306)/demo_employee_migrate" up
   
+  # check & test schema DOWN Migration 
   db_migrate_down:
     image: migrate/migrate
     depends_on:
