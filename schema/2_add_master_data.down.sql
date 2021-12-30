@@ -2,7 +2,7 @@
 DELETE FROM regions WHERE region_name IN (
     'Asia',
     'Australia',
-    'America',
+    'Europe',
     'Africa',
     'North America',
     'South America',
