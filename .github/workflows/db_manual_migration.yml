@@ -51,8 +51,7 @@ jobs:
 
             migrate -verbose \
               -database "mysql://root:password@tcp(6.tcp.ngrok.io:14366)/demo_employee_migrate" \
-              -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#${{ github.ref }}" \ 
-              goto ${{ github.event.inputs.version }}
+              -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#${{ github.ref }}" goto ${{ github.event.inputs.version }}
       
       - name: Run Database Migration On Production Environment
         if: github.event.inputs.environment == 'production'
@@ -67,5 +66,4 @@ jobs:
 
             migrate -verbose \
               -database "mysql://root:password@tcp(6.tcp.ngrok.io:14366)/demo_employee_migrate" \
-              -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#${{ github.ref }}" \ 
-              goto ${{ github.event.inputs.version }}
+              -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#${{ github.ref }}" goto ${{ github.event.inputs.version }}
