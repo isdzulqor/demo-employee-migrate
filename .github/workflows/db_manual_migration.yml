@@ -50,8 +50,8 @@ jobs:
             echo "Migration Version ${{ github.event.inputs.version }}"
 
             migrate -verbose \
-              -database "mysql://${{ secrets.DEV_SQL_WRITE_DSN }}" \
-              -source "github://haraj-backend:${{ secrets.GITHUB_TOKEN }}@haraj-backend/haraj-billing-system/schema#${{ github.ref }}" \ 
+              -database "mysql://root:password@tcp(6.tcp.ngrok.io:14366)/demo_employee_migrate" \
+              -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#${{ github.ref }}" \ 
               goto ${{ github.event.inputs.version }}
       
       - name: Run Database Migration On Production Environment
@@ -66,6 +66,6 @@ jobs:
             echo "Migration Version ${{ github.event.inputs.version }}"
 
             migrate -verbose \
-              -database "mysql://${{ secrets.PROD_SQL_WRITE_DSN }}" \
-              -source "github://haraj-backend:${{ secrets.GITHUB_TOKEN }}@haraj-backend/haraj-billing-system/schema#${{ github.ref }}" \ 
+              -database "mysql://root:password@tcp(6.tcp.ngrok.io:14366)/demo_employee_migrate" \
+              -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#${{ github.ref }}" \ 
               goto ${{ github.event.inputs.version }}
