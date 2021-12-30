@@ -1,0 +1,71 @@
+name: Database Manual Migration
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "The value should be one of this option: dev, production"
+        required: true
+      version:
+        description: "The value should be the schema version"
+        required: true
+
+jobs:
+  db_migration:
+    name: Database Migration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate `environment` Input
+        run: |
+          ENVIRONMENT_INPUT=${{ github.event.inputs.environment }}
+          
+          VALID_ENVIRONMENT=("dev" "production")
+          IS_VALID=false
+
+          # Check environment input is exist on list of VALID_ENVIRONMENT
+          for v in ${VALID_ENVIRONMENT[@]}
+          do
+              if [ "$ENVIRONMENT_INPUT" == "$v" ]; then
+                  IS_VALID=true
+                  break
+              fi
+          done
+
+          if [ "$IS_VALID" = true ]; then 
+              echo "[INFO] ENVIRONMENT_INPUT $ENVIRONMENT_INPUT is valid"
+          else
+              echo "[FATAL] ENVIRONMENT_INPUT $ENVIRONMENT_INPUT is not valid"
+              echo "[FATAL] ENVIRONMENT_INPUT value must be one of this option: ${VALID_ENVIRONMENT[@]}"
+              exit 1
+          fi 
+
+      - name: Run Database Migration On Dev Environment
+        if: github.event.inputs.environment == 'dev'
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.DEV_BASTION_SERVER_HOST }}
+          username: ${{ secrets.DEV_BASTION_SERVER_USERNAME }}
+          key: ${{ secrets.DEV_BASTION_SERVER_KEY }}
+          port: 22
+          script: |
+            echo "Migration Version ${{ github.event.inputs.version }}"
+
+            migrate -verbose \
+              -database "mysql://${{ secrets.DEV_SQL_WRITE_DSN }}" \
+              -source "github://haraj-backend:${{ secrets.GITHUB_TOKEN }}@haraj-backend/haraj-billing-system/schema#${{ github.ref }}" \ 
+              goto ${{ github.event.inputs.version }}
+      
+      - name: Run Database Migration On Production Environment
+        if: github.event.inputs.environment == 'production'
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.PROD_BASTION_SERVER_HOST }}
+          username: ${{ secrets.PROD_BASTION_SERVER_USERNAME }}
+          key: ${{ secrets.PROD_BASTION_SERVER_KEY }}
+          port: 22
+          script: |
+            echo "Migration Version ${{ github.event.inputs.version }}"
+
+            migrate -verbose \
+              -database "mysql://${{ secrets.PROD_SQL_WRITE_DSN }}" \
+              -source "github://haraj-backend:${{ secrets.GITHUB_TOKEN }}@haraj-backend/haraj-billing-system/schema#${{ github.ref }}" \ 
+              goto ${{ github.event.inputs.version }}
