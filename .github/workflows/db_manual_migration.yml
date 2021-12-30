@@ -8,6 +8,11 @@ on:
       version:
         description: "The value should be the schema version"
         required: true
+      # works as safe guard
+      # to keep it safe for production manual migration
+      password:
+        description: "Only if the environment is production. The value should be filled with password for db migration based on password value in secret"
+        required: false
 
 jobs:
   db_migration:
@@ -53,6 +58,18 @@ jobs:
               -database "mysql://root:password@tcp(6.tcp.ngrok.io:14366)/demo_employee_migrate" \
               -source "github://isdzulqor:${{ secrets.GITHUB_TOKEN }}@isdzulqor/demo-employee-migrate/schema#${{ github.ref }}" goto ${{ github.event.inputs.version }}
       
+      - name: Validate `password` Input
+        if: github.event.inputs.environment == 'production'
+        run: |
+          PASSWORD_INPUT=${{ github.event.inputs.password }}
+
+          if [ "$PASSWORD_INPUT" = ${{ secrets.PROD_MIGRATION_PASSWORD }} ]; then 
+              echo "[INFO] PASSWORD_INPUT is valid"
+          else
+              echo "[FATAL] PASSWORD_INPUT is not valid"
+              exit 1
+          fi 
+
       - name: Run Database Migration On Production Environment
         if: github.event.inputs.environment == 'production'
         uses: appleboy/ssh-action@v0.1.4
